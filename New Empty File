@@ -1,0 +1,8 @@
+متابعة واكتب بس كود الملف اللى عليه الدور مش كود الملف اللى عليه الدور والملفات السابقة واكتب الكود كامل مش هفكرك تانى اكتب على الاقل 3 ملفات فى المرة
+git config --global user.name "amrsameh2020"
+git config --global user.email "amrsameh2012@gmail.com"
+cd /opt/lampp/htdocs/real-estate-system/
+git init
+git remote add origin https://github.com/amrsameh2020/real-estate-system.git
+git branch -M main
+
