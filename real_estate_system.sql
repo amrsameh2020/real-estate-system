@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 10, 2025 at 11:00 AM
+-- Generation Time: Jun 11, 2025 at 11:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -170,6 +170,14 @@ CREATE TABLE `leases` (
   `status` enum('Active','Expired','Terminated','Draft') NOT NULL DEFAULT 'Draft'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `leases`
+--
+
+INSERT INTO `leases` (`id`, `unit_id`, `tenant_user_id`, `start_date`, `end_date`, `rent_amount`, `payment_frequency`, `security_deposit`, `status`) VALUES
+(1, 1, 4, '2024-08-15', '2025-08-14', 25000.00, 'Quarterly', NULL, 'Active'),
+(2, 3, 5, '2024-09-01', '2025-08-31', 120000.00, 'Annually', NULL, 'Active');
+
 -- --------------------------------------------------------
 
 --
@@ -237,6 +245,14 @@ CREATE TABLE `properties` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `properties`
+--
+
+INSERT INTO `properties` (`id`, `name`, `property_type`, `address`, `city`, `country`, `latitude`, `longitude`, `created_at`, `updated_at`) VALUES
+(1, 'برج النخيل', 'مبنى سكني', 'شارع الملك فهد، حي العليا', 'الرياض', 'المملكة العربية السعودية', NULL, NULL, '2025-06-11 08:49:16', '2025-06-11 08:49:16'),
+(2, 'مجمع الياسمين السكني', 'مجمع فلل', 'شارع الأمير سلطان، حي النهضة', 'جدة', 'المملكة العربية السعودية', NULL, NULL, '2025-06-11 08:49:16', '2025-06-11 08:49:16');
+
 -- --------------------------------------------------------
 
 --
@@ -249,6 +265,14 @@ CREATE TABLE `property_owners` (
   `ownership_percentage` decimal(5,2) NOT NULL DEFAULT 100.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `property_owners`
+--
+
+INSERT INTO `property_owners` (`property_id`, `owner_user_id`, `ownership_percentage`) VALUES
+(1, 3, 100.00),
+(2, 3, 100.00);
+
 -- --------------------------------------------------------
 
 --
@@ -260,6 +284,16 @@ CREATE TABLE `roles` (
   `name` varchar(50) NOT NULL COMMENT 'اسم الدور (SystemAdmin, Accountant, Owner, Tenant)',
   `description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `description`) VALUES
+(1, 'SystemAdmin', 'مدير النظام الأعلى صلاحية'),
+(2, 'Accountant', 'المحاسب المسؤول عن المالية'),
+(3, 'Owner', 'مالك عقار أو أكثر'),
+(4, 'Tenant', 'مستأجر لوحدة عقارية');
 
 -- --------------------------------------------------------
 
@@ -294,6 +328,15 @@ CREATE TABLE `units` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `units`
+--
+
+INSERT INTO `units` (`id`, `property_id`, `unit_number`, `unit_type`, `status`, `floor_number`, `area_sqm`, `bedrooms`, `bathrooms`, `market_rent`, `amenities`, `created_at`, `updated_at`) VALUES
+(1, 1, 'A-101', 'شقة', 'Occupied', NULL, NULL, 2, NULL, 25000.00, NULL, '2025-06-11 08:49:16', '2025-06-11 08:49:16'),
+(2, 1, 'A-102', 'شقة', 'Vacant', NULL, NULL, 3, NULL, 35000.00, NULL, '2025-06-11 08:49:16', '2025-06-11 08:49:16'),
+(3, 2, 'فيلا 23', 'فيلا', 'Occupied', NULL, NULL, 5, NULL, 120000.00, NULL, '2025-06-11 08:49:16', '2025-06-11 08:49:16');
+
 -- --------------------------------------------------------
 
 --
@@ -313,6 +356,18 @@ CREATE TABLE `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `role_id`, `full_name`, `email`, `phone_number`, `password_hash`, `avatar_url`, `is_active`, `last_login_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 'مدير النظام', 'admin@app.com', '0510000001', '$2y$10$DtlrlgiIS9gHJqoBb/bazOA.A9hGzBk2W706YURBE7IHEnoxtiTsS', NULL, 1, NULL, '2025-06-11 08:49:16', '2025-06-11 08:59:14'),
+(2, 2, 'علي المحاسب', 'accountant@app.com', '0510000002', '$2y$10$DtlrlgiIS9gHJqoBb/bazOA.A9hGzBk2W706YURBE7IHEnoxtiTsS', NULL, 1, NULL, '2025-06-11 08:49:16', '2025-06-11 08:59:18'),
+(3, 3, 'محمد عبدالله', 'owner@app.com', '0510000003', '$2y$10$DtlrlgiIS9gHJqoBb/bazOA.A9hGzBk2W706YURBE7IHEnoxtiTsS', NULL, 1, NULL, '2025-06-11 08:49:16', '2025-06-11 08:59:21'),
+(4, 4, 'خالد يوسف', 'tenant1@app.com', '0510000004', '$2y$10$DtlrlgiIS9gHJqoBb/bazOA.A9hGzBk2W706YURBE7IHEnoxtiTsS', NULL, 1, NULL, '2025-06-11 08:49:16', '2025-06-11 08:59:23'),
+(5, 4, 'سارة محمود', 'tenant2@app.com', '0510000005', '$2y$10$DtlrlgiIS9gHJqoBb/bazOA.A9hGzBk2W706YURBE7IHEnoxtiTsS', NULL, 1, NULL, '2025-06-11 08:49:16', '2025-06-11 08:59:25'),
+(6, 4, 'Amr Sameh', 'itforless@outlook.com', '01091968252', '$2y$10$DtlrlgiIS9gHJqoBb/bazOA.A9hGzBk2W706YURBE7IHEnoxtiTsS', NULL, 1, NULL, '2025-06-11 08:58:27', '2025-06-11 08:58:27');
 
 -- --------------------------------------------------------
 
@@ -530,7 +585,7 @@ ALTER TABLE `leads`
 -- AUTO_INCREMENT for table `leases`
 --
 ALTER TABLE `leases`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `maintenance_requests`
@@ -554,25 +609,25 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `vendors`

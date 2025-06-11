@@ -1,0 +1,89 @@
+
+/**
+ * ===================================================================
+ * ملف الأنماط المخصص (Custom Stylesheet)
+ * ===================================================================
+ * هذا الملف يحتوي على تعديلات وتخصيصات إضافية على تصميم Bootstrap
+ * ليتناسب مع هوية وألوان المشروع التي اتفقنا عليها.
+ */
+
+/*
+Color Palette:
+- Primary: #2563EB (أزرق متوسط)
+- Accent: #10B981 (أخضر زمردي)
+- Text Primary: #1F2937 (رمادي داكن)
+- Text Secondary: #6B7280 (رمادي متوسط)
+- Background: #F9FAFB (أبيض مائل للرمادي)
+- Card Background: #FFFFFF (أبيض نقي)
+*/
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #F9FAFB;
+    color: #1F2937;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .05);
+    transition: margin-right .3s ease-in-out;
+    background-color: #111827; /* لون الشريط الجانبي داكن */
+}
+
+.sidebar .nav-link {
+    color: #9CA3AF; /* لون النصوص العادي */
+    border-radius: 0.5rem;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #1F2937;
+    color: #FFFFFF;
+}
+
+.sidebar .nav-link.active {
+    background-color: #2563EB; /* اللون الأساسي */
+    color: #FFFFFF;
+}
+
+.sidebar .nav-link .bi {
+    width: 1.5rem; /* لتوحيد حجم الأيقونات */
+}
+
+/* Main Content Styles */
+.content-wrapper {
+    transition: margin-right .3s ease-in-out;
+    width: 100%;
+    margin-right: 260px;
+}
+
+/* Collapsed Sidebar Styles */
+body.sidebar-collapsed .sidebar {
+    margin-right: -260px;
+}
+body.sidebar-collapsed .content-wrapper {
+    margin-right: 0;
+}
+@media (max-width: 992px) {
+    .sidebar { margin-right: -260px; }
+    .content-wrapper { margin-right: 0; }
+    body.sidebar-collapsed .sidebar { margin-right: 0; }
+}
+
+/* Card and Button Styles */
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+.btn-primary {
+    background-color: #2563EB;
+    border-color: #2563EB;
+}
+
+.btn-primary:hover {
+    background-color: #1D4ED8;
+    border-color: #1D4ED8;
+}
