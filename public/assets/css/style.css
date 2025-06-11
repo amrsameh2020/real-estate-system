@@ -1,89 +1,132 @@
-
-/**
- * ===================================================================
- * ملف الأنماط المخصص (Custom Stylesheet)
- * ===================================================================
- * هذا الملف يحتوي على تعديلات وتخصيصات إضافية على تصميم Bootstrap
- * ليتناسب مع هوية وألوان المشروع التي اتفقنا عليها.
+/*
+ * File: public/assets/css/style.css
+ * This file contains the final custom styles for the right-aligned, responsive sidebar.
  */
 
-/*
-Color Palette:
-- Primary: #2563EB (أزرق متوسط)
-- Accent: #10B981 (أخضر زمردي)
-- Text Primary: #1F2937 (رمادي داكن)
-- Text Secondary: #6B7280 (رمادي متوسط)
-- Background: #F9FAFB (أبيض مائل للرمادي)
-- Card Background: #FFFFFF (أبيض نقي)
-*/
+:root {
+    --sidebar-width: 280px;
+    --sidebar-bg: #212529; /* Bootstrap's .bg-dark color */
+}
 
+/* --- Basic Layout & Typography --- */
 body {
     font-family: 'Cairo', sans-serif;
-    background-color: #F9FAFB;
-    color: #1F2937;
+    background-color: #f8f9fa;
+    direction: rtl; 
+    text-align: right;
+    /* Prevent horizontal scrollbar during animation */
+    overflow-x: hidden; 
+
 }
 
-/* Sidebar Styles */
+/* --- Main Content Wrapper --- */
+#main-content {
+    transition: margin-right 0.3s ease-in-out;    width:fit-content;
+}
+
+/* --- Sidebar Base Styles --- */
 .sidebar {
-    width: 260px;
-    min-height: 100vh;
-    box-shadow: 0 0 1rem rgba(0, 0, 0, .05);
-    transition: margin-right .3s ease-in-out;
-    background-color: #111827; /* لون الشريط الجانبي داكن */
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0; /* Position the sidebar on the right */
+    background-color: var(--sidebar-bg);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1100; /* High z-index to stay on top */
 }
 
+/* --- Sidebar Navigation Links --- */
 .sidebar .nav-link {
-    color: #9CA3AF; /* لون النصوص العادي */
-    border-radius: 0.5rem;
+    display: flex;
+    width:fit-content;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s, color 0.2s;
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .sidebar .nav-link:hover {
-    background-color: #1F2937;
-    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar .nav-link.active {
-    background-color: #2563EB; /* اللون الأساسي */
-    color: #FFFFFF;
+    background-color: #0d6efd; /* Bootstrap's primary color */
+    color: #fff;
+    font-weight: bold;
 }
 
-.sidebar .nav-link .bi {
-    width: 1.5rem; /* لتوحيد حجم الأيقونات */
+.sidebar .nav-link i {
+    font-size: 1.1rem;
+    width: 2rem; /* Ensure icons align nicely */
+    text-align: center;
 }
 
-/* Main Content Styles */
-.content-wrapper {
-    transition: margin-right .3s ease-in-out;
-    width: 100%;
-    margin-right: 260px;
+/* Titles for navigation sections */
+.sidebar .nav-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #6c757d; /* Bootstrap's secondary color */
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
 }
 
-/* Collapsed Sidebar Styles */
-body.sidebar-collapsed .sidebar {
-    margin-right: -260px;
-}
-body.sidebar-collapsed .content-wrapper {
-    margin-right: 0;
-}
-@media (max-width: 992px) {
-    .sidebar { margin-right: -260px; }
-    .content-wrapper { margin-right: 0; }
-    body.sidebar-collapsed .sidebar { margin-right: 0; }
+.sidebar .nav-item-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 1rem 0;
 }
 
-/* Card and Button Styles */
-.card {
-    border: none;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+/* --- Desktop Layout (Large Screens) --- */
+@media (min-width: 992px) {
+    #main-content {
+        margin-right: var(--sidebar-width); /* Push content to the left */
+    }
+    
+    /* Hide mobile-only controls on desktop */
+    #sidebar-toggle {
+        display: none !important;
+    }
 }
 
-.btn-primary {
-    background-color: #2563EB;
-    border-color: #2563EB;
-}
+/* --- Mobile & Tablet Layout (Small Screens) --- */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(var(--sidebar-width)); /* Hide sidebar off-screen to the right */
+    }
 
-.btn-primary:hover {
-    background-color: #1D4ED8;
-    border-color: #1D4ED8;
+    body.sidebar-open .sidebar {
+        transform: translateX(0); /* Show sidebar */
+    }
+
+    #main-content {
+        margin-right: 0;
+    }
+
+    /* Mobile Toggle Button */
+    #sidebar-toggle {
+        position: fixed;
+        top: 15px;
+        right: 15px; /* Position toggle button on the right */
+        z-index: 1050;
+        width: 45px;
+        height: 45px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Dark overlay for when the sidebar is open on mobile */
+    body.sidebar-open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1099;
+        -webkit-tap-highlight-color: transparent; /* Prevent flash on tap */
+    }
 }

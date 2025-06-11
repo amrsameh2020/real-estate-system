@@ -1,66 +1,54 @@
-// File: public/assets/js/custom.js
-
 /**
- * ===================================================================
- * ملف JavaScript المخصص (Custom JS)
- * ===================================================================
- * يحتوي هذا الملف على الكود الخاص بالتفاعلات الديناميكية في الواجهة الأمامية،
- * مثل طي الشريط الجانبي، طلبات AJAX، وتفعيل النوافذ المنبثقة.
+ * File: public/assets/js/custom.js
+ * This script handles the client-side interactions for the responsive sidebar.
  */
+document.addEventListener('DOMContentLoaded', function () {
 
-// التأكد من أن DOM قد تم تحميله بالكامل قبل تنفيذ أي كود
-document.addEventListener('DOMContentLoaded', function() {
-
-    // --- Sidebar Toggle Functionality ---
+    const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            // إضافة أو إزالة كلاس من body للتحكم في حالة الشريط الجانبي
-            document.body.classList.toggle('sidebar-collapsed');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    // Ensure all required elements exist before adding event listeners
+    if (sidebar && sidebarToggle && sidebarClose) {
+
+        // Function to open the sidebar
+        function openSidebar() {
+            document.body.classList.add('sidebar-open');
+        }
+
+        // Function to close the sidebar
+        function closeSidebar() {
+            document.body.classList.remove('sidebar-open');
+        }
+
+        // Event listener for the main toggle button (hamburger icon)
+        sidebarToggle.addEventListener('click', function (e) {
+            e.stopPropagation(); // Prevent the click from bubbling up
+            openSidebar();
         });
+
+        // Event listener for the close button inside the sidebar
+        sidebarClose.addEventListener('click', function () {
+            closeSidebar();
+        });
+
+        // Event listener to close the sidebar when clicking on the main content area (overlay effect)
+        document.addEventListener('click', function (e) {
+            // If the body has the 'sidebar-open' class and the click is outside the sidebar
+            if (document.body.classList.contains('sidebar-open') && !sidebar.contains(e.target)) {
+                closeSidebar();
+            }
+        });
+
     }
 
-    // --- Bootstrap Tooltip Initialization ---
-    // تفعيل التلميحات (Tooltips) المستخدمة في الأزرار
+    /**
+     * Optional: Initialize Bootstrap tooltips if you use them in your application.
+     * This finds all elements with data-bs-toggle="tooltip" and enables the tooltip.
+     */
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-    
-    // --- AJAX Example Function ---
-    // يمكنك استخدام هذه الدالة كقالب لإرسال طلبات AJAX
-    async function performAjaxRequest(url, method = 'GET', data = null) {
-        try {
-            const options = {
-                method: method,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest', // للإشارة بأن الطلب هو AJAX
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            if (data && method !== 'GET') {
-                options.body = JSON.stringify(data);
-            }
-
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('AJAX request failed:', error);
-            // عرض رسالة خطأ للمستخدم
-            Swal.fire('خطأ!', 'حدث خطأ أثناء الاتصال بالخادم.', 'error');
-            return null;
-        }
-    }
-
-    // مثال على كيفية استخدام الدالة
-    // performAjaxRequest('?url=api/get_units&property_id=1').then(data => {
-    //     if(data) {
-    //         console.log(data);
-    //     }
-    // });
 
 });

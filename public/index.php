@@ -13,44 +13,38 @@
  * 5. يقوم بتضمين ملف العرض (View) المناسب من مجلد app/views.
  */
 
-
 // --- الخطوة 1: تحميل وتشغيل قلب النظام ---
-// هذا السطر يقوم بتحميل كل الكلاسات والإعدادات الأساسية.
-// يجب أن يكون المسار صحيحاً بناءً على مكان ملف index.php.
 require_once __DIR__ . '/../app/core/bootstrap.php';
 
-
 // --- الخطوة 2: تحليل الرابط (Routing) ---
-// جلب الرابط المطلوب من متغير 'url' الذي تم إعداده في ملف .htaccess
-// وتنظيفه من أي مسافات أو شرطات زائدة من البداية والنهاية.
 $request_uri = trim($_GET['url'] ?? '', '/');
 
-
 // --- الخطوة 3: التحقق من المصادقة (Authentication Gate) ---
-// قائمة بالصفحات التي يمكن للزائر الوصول إليها بدون تسجيل دخول.
 $public_pages = ['login', 'register', 'handle-login', 'handle-register'];
 $is_public_page = in_array($request_uri, $public_pages);
 
-// إذا لم يكن المستخدم مسجل دخوله ويحاول الوصول لصفحة محمية، قم بتحويله لصفحة الدخول.
 if (!Auth::check() && !$is_public_page) {
     Session::flash('warning', 'يجب عليك تسجيل الدخول أولاً للوصول لهذه الصفحة.');
     redirect('public/index.php?url=login');
 }
 
-// إذا كان المستخدم مسجل دخوله ويحاول الوصول لصفحة الدخول/التسجيل، قم بتحويله للوحة التحكم.
 if (Auth::check() && $is_public_page) {
     redirect('public/index.php?url=dashboard');
 }
-
 
 // --- الخطوة 4: توجيه الطلب إلى الصفحة أو ملف المعالجة المناسب ---
 $view_path = APP_ROOT . '/app/views/';
 $script_path = APP_ROOT . '/app/scripts/';
 $page_file = '';
 
-// تقسيم الرابط إلى أجزاء للتعامل مع الروابط المعقدة (e.g., /properties/view/15)
+// تقسيم الرابط إلى أجزاء للتعامل مع الروابط المعقدة
 $uri_parts = explode('/', $request_uri);
 $main_route = $uri_parts[0] ?? '';
+$sub_route = $uri_parts[1] ?? '';
+$id = $uri_parts[2] ?? null;
+
+// تمرير الـ ID إلى الصفحات التي تحتاجه
+if ($id) { $_GET['id'] = $id; }
 
 switch ($main_route) {
     // --- صفحات المصادقة ---
@@ -71,11 +65,10 @@ switch ($main_route) {
     case 'handle-register':
         $page_file = $script_path . 'auth/handle_register.php';
         break;
-        
+
     // --- لوحة التحكم ---
     case 'dashboard':
-    case '': // الصفحة الافتراضية
-        // تحديد أي لوحة تحكم سيتم عرضها بناءً على دور المستخدم
+    case '':
         if (Auth::hasRole('SystemAdmin')) {
             $page_file = $view_path . 'dashboard/admin_dashboard.php';
         } elseif (Auth::hasRole('Accountant')) {
@@ -87,35 +80,91 @@ switch ($main_route) {
         }
         break;
 
-    // --- صفحات إدارة العقارات ---
+    // --- إدارة العقارات ---
     case 'properties':
-        Auth::requireRole('SystemAdmin'); // مثال على التحقق من الصلاحية
-        $sub_route = $uri_parts[1] ?? 'index';
-        $id = $uri_parts[2] ?? null;
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'index';
+        $page_file = $view_path . "properties/{$sub_route}.php";
+        break;
 
-        // تمرير الـ ID إلى الصفحات التي تحتاجه
-        if ($id) { $_GET['id'] = $id; }
+    // --- إدارة الوحدات ---
+    case 'units':
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'index';
+        $page_file = $view_path . "units/{$sub_route}.php";
+        break;
 
-        switch($sub_route) {
-            case 'index':
-            default:
-                $page_file = $view_path . 'properties/index.php';
-                break;
-            case 'create':
-                $page_file = $view_path . 'properties/create.php';
-                break;
-            case 'view':
-                $page_file = $view_path . 'properties/view.php';
-                break;
-            case 'edit':
-                 $page_file = $view_path . 'properties/edit.php';
-                 break;
+    // --- إدارة المستخدمين ---
+    case 'users':
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'index';
+        $page_file = $view_path . "users/{$sub_route}.php";
+        break;
+
+    // --- الإعدادات ---
+    case 'settings':
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'index';
+        $page_file = $view_path . "settings/{$sub_route}.php";
+        break;
+
+    // --- العقود والإيجارات ---
+    case 'leases':
+        Auth::requireRole('SystemAdmin', 'Accountant');
+        $sub_route = $sub_route ?: 'index';
+        $page_file = $view_path . "leases/{$sub_route}.php";
+        break;
+
+    // --- المالية (الفواتير، المصروفات، التقارير) ---
+    case 'finance':
+        Auth::requireRole('SystemAdmin', 'Accountant');
+        $sub_route = $sub_route ?: 'invoices';
+        $page_file = $view_path . "finance/{$sub_route}.php";
+        break;
+
+    // --- التسويق وإدارة العملاء ---
+    case 'marketing':
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'leads';
+        $page_file = $view_path . "marketing/{$sub_route}.php";
+        break;
+
+    // --- إدارة العملاء (CRM) ---
+    case 'crm':
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'clients';
+        $page_file = $view_path . "crm/{$sub_route}.php";
+        break;
+
+    // --- الصيانة ---
+    case 'maintenance':
+        Auth::requireRole('SystemAdmin');
+        $sub_route = $sub_route ?: 'board';
+        $page_file = $view_path . "maintenance/{$sub_route}.php";
+        break;
+
+    // --- المالك ---
+    case 'owner':
+        Auth::requireRole('Owner');
+        $sub_route = $sub_route ?: 'reports';
+        $page_file = $view_path . "owner/{$sub_route}.php";
+        if ($sub_route == 'properties' && isset($uri_parts[2]) && $uri_parts[2] == 'view') {
+            $page_file = $view_path . "owner/properties/view.php";
+        }
+        break;
+
+    // --- المستأجر ---
+    case 'tenant':
+        Auth::requireRole('Tenant');
+        $sub_route = $sub_route ?: 'payments';
+        $page_file = $view_path . "tenant/{$sub_route}.php";
+        if ($sub_route == 'maintenance' && isset($uri_parts[2]) && $uri_parts[2] == 'create') {
+            $page_file = $view_path . "tenant/maintenance/create.php";
         }
         break;
 
     default:
-        // إذا لم يتم العثور على الرابط، اعرض صفحة خطأ 404
-        $page_file = $view_path . 'errors/404.php'; // سنحتاج لإنشاء هذا الملف
+        $page_file = $view_path . 'errors/404.php';
         break;
 }
 
@@ -124,7 +173,5 @@ if (file_exists($page_file)) {
     require $page_file;
 } else {
     http_response_code(404);
-    // يمكنك هنا تضمين ملف عرض مخصص لصفحة 404
     require $view_path . 'errors/404.php';
 }
-
