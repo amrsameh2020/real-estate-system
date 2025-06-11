@@ -51,7 +51,7 @@ if (!Auth::check() || !Auth::hasRole('Tenant')) {
         .content-wrapper {
             transition: margin-right .3s ease-in-out;
             width: 100%;
-            margin-right: 280px;
+            /* margin-right: 280px; */
         }
         body.sidebar-collapsed .sidebar { margin-right: -280px; }
         body.sidebar-collapsed .content-wrapper { margin-right: 0; }

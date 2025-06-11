@@ -52,7 +52,7 @@ if (!Auth::check()) {
         .content-wrapper {
             transition: margin-right .3s ease-in-out;
             width: 100%;
-            margin-right: 280px;
+            /* margin-right: 280px; */
         }
         /* Style for collapsed sidebar */
         body.sidebar-collapsed .sidebar {
